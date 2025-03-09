@@ -1,6 +1,7 @@
 // src/pages/LoginPage.js
 import React, { useState } from "react";
 import Login from "../components/Login";
+import Register from "../components/Register";
 
 const LoginPage = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -8,7 +9,7 @@ const LoginPage = () => {
   return (
     <div className="login-page">
       {isRegistering ? (
-        <h2>Trang đăng ký (Chưa làm)</h2>
+        <Register onSwitch={() => setIsRegistering(false)} />
       ) : (
         <Login onSwitch={() => setIsRegistering(true)} />
       )}
