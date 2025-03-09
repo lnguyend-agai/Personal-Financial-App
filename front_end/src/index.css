@@ -1,0 +1,48 @@
+.login-container {
+  text-align: center;
+  max-width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.password-container {
+  display: flex;
+  align-items: center;
+}
+
+.password-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.btn-register {
+  width: 100%;
+  padding: 10px;
+  background-color: #ccc;
+  color: black;
+  border: none;
+  margin-top: 10px;
+  border-radius: 4px;
+}
