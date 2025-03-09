@@ -9,7 +9,7 @@ const Register = ({ onSwitch }) => {
     e.preventDefault();
     // Add registration logic here
     if (password === confirmPassword) {
-      console.log("User registered:", { username, password });
+        alert("User registered: " + JSON.stringify({ username, password }));
       // Reset form or redirect to login page
     } else {
       console.error("Passwords do not match");
