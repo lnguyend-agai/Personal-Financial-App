@@ -5,12 +5,27 @@ const Register = ({ onSwitch }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     // Add registration logic here
     if (password === confirmPassword) {
-        alert("User registered: " + JSON.stringify({ username, password }));
-      // Reset form or redirect to login page
+      try {
+        const response = await fetch("http://localhost:8000/api/register/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        if (response.ok) {
+          console.log("User registered successfully");
+          // Reset form or redirect to login page
+        } else {
+          console.error("Registration failed");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     } else {
       console.error("Passwords do not match");
     }
