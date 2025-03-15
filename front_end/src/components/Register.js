@@ -18,16 +18,17 @@ const Register = ({ onSwitch }) => {
           body: JSON.stringify({ username, password }),
         });
         if (response.ok) {
-          console.log("User registered successfully");
+          alert("User registered successfully");
           // Reset form or redirect to login page
         } else {
-          console.error("Registration failed");
+          const errorData = await response.json();
+          alert("Registration failed: " + JSON.stringify(errorData));
         }
       } catch (error) {
-        console.error("Error:", error);
+        alert("Error: " + error.message);
       }
     } else {
-      console.error("Passwords do not match");
+      alert("Passwords do not match");
     }
   };
 
