@@ -2,13 +2,32 @@
 import React, { useState } from "react";
 
 const Login = ({ onSwitch }) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
+    try {
+      const response = await fetch("http://localhost:8000/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert("Login successful");
+        // Save token and redirect to dashboard
+        localStorage.setItem("token", data.token);
+        // Redirect to dashboard or another page
+      } else {
+        alert("Login failed: Invalid username or password");
+      }
+    } catch (error) {
+      alert("Error: " + error.message);
+    }
   };
 
   return (
@@ -16,16 +35,16 @@ const Login = ({ onSwitch }) => {
       <h2>Finance App</h2>
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <div className="password-container">
           <input
             type={showPassword ? "text" : "password"}
-            placeholder="Mật khẩu"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -37,9 +56,9 @@ const Login = ({ onSwitch }) => {
             👁
           </button>
         </div>
-        <button type="submit" className="btn-login">Đăng nhập</button>
+        <button type="submit" className="btn-login">Login</button>
         <button type="button" className="btn-register" onClick={onSwitch}>
-          Đăng ký tài khoản mới
+          Register a new account
         </button>
       </form>
     </div>
