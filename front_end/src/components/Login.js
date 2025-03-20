@@ -1,10 +1,13 @@
 // src/components/Login.js
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ onSwitch }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,9 +22,11 @@ const Login = ({ onSwitch }) => {
       if (response.ok) {
         const data = await response.json();
         alert("Login successful");
-        // Save token and redirect to dashboard
+        // Save token and username
         localStorage.setItem("token", data.token);
-        // Redirect to dashboard or another page
+        localStorage.setItem("username", username);
+        // Redirect to dashboard
+        navigate("/dashboard");
       } else {
         alert("Login failed: Invalid username or password");
       }
