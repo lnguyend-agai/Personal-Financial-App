@@ -16,11 +16,57 @@ const Dashboard = ({ username }) => {
     setIncome((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Date: ${date}\nExpenses: Food - ${expenses.food}, Transport - ${expenses.transport}\nIncome: Salary - ${income.salary}, Coffee Sales - ${income.coffeeSales}`
-    );
+    const token = localStorage.getItem("token");
+
+    // Create payload for Transaction
+    const transactionsPayload = [
+      {
+        type: "expense",
+        category: "food",
+        amount: parseFloat(expenses.food),
+      },
+      {
+        type: "expense",
+        category: "transport",
+        amount: parseFloat(expenses.transport),
+      },
+      {
+        type: "income",
+        category: "salary",
+        amount: parseFloat(income.salary),
+      },
+      {
+        type: "income",
+        category: "coffeeSales",
+        amount: parseFloat(income.coffeeSales),
+      },
+    ];
+
+    try {
+      // Send each transaction to Transaction API
+      for (const transaction of transactionsPayload) {
+        const transactionResponse = await fetch("/api/transactions/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Token ${token}` : "",           },
+          body: JSON.stringify(transaction),
+        });
+
+        if (!transactionResponse.ok) {
+          const errorDetails = await transactionResponse.json();
+          alert("Transaction API Error:", errorDetails);
+          throw new Error(`Failed to create Transaction: ${transactionResponse.status} - ${transactionResponse.statusText}`);
+        }
+      }
+
+      alert("Transactions saved successfully!");
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+      alert("Failed to save transactions. Please try again.");
+    }
   };
 
   return (
