@@ -19,49 +19,79 @@ const Dashboard = ({ username }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-
-    // Create payload for Transaction
-    const transactionsPayload = [
-      {
-        type: "expense",
-        category: "food",
-        amount: parseFloat(expenses.food),
-      },
-      {
-        type: "expense",
-        category: "transport",
-        amount: parseFloat(expenses.transport),
-      },
-      {
-        type: "income",
-        category: "salary",
-        amount: parseFloat(income.salary),
-      },
-      {
-        type: "income",
-        category: "coffeeSales",
-        amount: parseFloat(income.coffeeSales),
-      },
-    ];
-
+  
     try {
-      // Send each transaction to Transaction API
+      // Tạo DailyRecord trước
+      const dailyRecordPayload = {
+        date: date, // Ngày được chọn từ form
+        total_income: parseFloat(income.salary) + parseFloat(income.coffeeSales),
+        total_expense: parseFloat(expenses.food) + parseFloat(expenses.transport),
+      };
+  
+      const dailyRecordResponse = await fetch("http://127.0.0.1:8000/api/daily-records/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Token ${token}` : "",
+        },
+        body: JSON.stringify(dailyRecordPayload),
+      });
+  
+      if (!dailyRecordResponse.ok) {
+        const errorDetails = await dailyRecordResponse.json();
+        console.error("DailyRecord API Error:", errorDetails);
+        throw new Error(`Failed to create DailyRecord: ${dailyRecordResponse.status} - ${dailyRecordResponse.statusText}`);
+      }
+  
+      const dailyRecord = await dailyRecordResponse.json(); // Lấy DailyRecord vừa tạo
+      const dailyRecordId = dailyRecord.id;
+  
+      // Tạo payload cho Transaction
+      const transactionsPayload = [
+        {
+          daily_record: dailyRecordId,
+          type: "expense",
+          category: "food",
+          amount: parseFloat(expenses.food),
+        },
+        {
+          daily_record: dailyRecordId,
+          type: "expense",
+          category: "transport",
+          amount: parseFloat(expenses.transport),
+        },
+        {
+          daily_record: dailyRecordId,
+          type: "income",
+          category: "salary",
+          amount: parseFloat(income.salary),
+        },
+        {
+          daily_record: dailyRecordId,
+          type: "income",
+          category: "coffeeSales",
+          amount: parseFloat(income.coffeeSales),
+        },
+      ];
+  
+      // Gửi từng giao dịch đến Transaction API
       for (const transaction of transactionsPayload) {
-        const transactionResponse = await fetch("/api/transactions/", {
+        const transactionResponse = await fetch("http://127.0.0.1:8000/api/transactions/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Token ${token}` : "",           },
+            Authorization: token ? `Token ${token}` : "",
+          },
           body: JSON.stringify(transaction),
         });
-
+  
         if (!transactionResponse.ok) {
           const errorDetails = await transactionResponse.json();
-          alert("Transaction API Error:", errorDetails);
+          console.error("Transaction API Error:", errorDetails);
           throw new Error(`Failed to create Transaction: ${transactionResponse.status} - ${transactionResponse.statusText}`);
         }
       }
-
+  
       alert("Transactions saved successfully!");
     } catch (error) {
       alert(`Error: ${error.message}`);
