@@ -22,13 +22,13 @@ const Register = ({ onSwitch }) => {
           // Reset form or redirect to login page
         } else {
           const errorData = await response.json();
-          alert("Registration failed: " + JSON.stringify(errorData));
+          console.log("Registration failed: " + JSON.stringify(errorData));
         }
       } catch (error) {
-        alert("Error: " + error.message);
+        console.log("Error: " + error.message);
       }
     } else {
-      alert("Passwords do not match");
+      console.log("Passwords do not match");
     }
   };
 
