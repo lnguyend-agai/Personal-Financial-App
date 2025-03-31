@@ -92,7 +92,7 @@ const Dashboard = ({ username }) => {
         }
       }
   
-      console.log("Transactions saved successfully!");
+      alert("Transactions saved successfully!");
     } catch (error) {
       console.log(`Error: ${error.message}`);
       console.log("Failed to save transactions. Please try again.");
