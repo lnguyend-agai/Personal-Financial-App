@@ -13,6 +13,10 @@ from .models import DailyRecord, Transaction
 from .serializers import UserSerializer, DailyRecordSerializer, TransactionSerializer
 from django.contrib.auth import get_user_model
 
+from django.db.models import Sum
+from datetime import datetime
+from rest_framework.decorators import action
+
 User = get_user_model()
 
 class RegisterView(APIView):
@@ -49,8 +53,28 @@ class DailyRecordViewSet(viewsets.ModelViewSet):
         # Assign current user to the daily record
         serializer.save(user=self.request.user)
 
+    def get_queryset(self):
+        return DailyRecord.objects.filter(user=self.request.user)
+
 # ViewSet for Transaction
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]  # For user logined
+
+    def get_queryset(self):
+        # Filter Transactions follow Daily Records of current user
+        return Transaction.objects.filter(daily_record__user=self.request.user)
+
+    @action(detail=False, methods=['get'], url_path='monthly')
+    def monthly(self, request):
+        month = request.query_params.get('month', datetime.now().month)
+        year = request.query_params.get('year', datetime.now().year)
+
+        total_expense = self.get_queryset().filter(
+            type="expense",
+            created_at__month=month,
+            created_at__year=year
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        return Response({"month": month, "year": year, "total_expense": total_expense})

@@ -21,7 +21,6 @@ const Login = ({ onSwitch }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        alert("Login successful");
         // Save token and username
         localStorage.setItem("token", data.token);
         localStorage.setItem("username", username);
@@ -31,7 +30,7 @@ const Login = ({ onSwitch }) => {
         alert("Login failed: Invalid username or password");
       }
     } catch (error) {
-      alert("Error: " + error.message);
+      console.log("Error: " + error.message);
     }
   };
 

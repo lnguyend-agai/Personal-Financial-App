@@ -5,7 +5,7 @@ const Dashboard = ({ username }) => {
   const [date, setDate] = useState("");
   const [expenses, setExpenses] = useState({ food: "", transport: "" });
   const [income, setIncome] = useState({ salary: "", coffeeSales: "" });
-
+  const [monthlyExpense, setMonthlyExpense] = useState(null);
   const handleExpensesChange = (e) => {
     const { name, value } = e.target;
     setExpenses((prev) => ({ ...prev, [name]: value }));
@@ -92,10 +92,34 @@ const Dashboard = ({ username }) => {
         }
       }
   
-      alert("Transactions saved successfully!");
+      console.log("Transactions saved successfully!");
     } catch (error) {
-      alert(`Error: ${error.message}`);
-      alert("Failed to save transactions. Please try again.");
+      console.log(`Error: ${error.message}`);
+      console.log("Failed to save transactions. Please try again.");
+    }
+  };
+
+  const fetchMonthlyExpense = async () => {
+    const token = localStorage.getItem("token");
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/transactions/monthly/", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Token ${token}` : "",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch monthly expense");
+      }
+  
+      const data = await response.json();
+      setMonthlyExpense(data.total_expense); // Lưu tổng chi tiêu vào state
+    } catch (error) {
+      console.error("Error fetching monthly expense:", error);
+      console.log("Failed to fetch monthly expense. Please try again.");
     }
   };
 
@@ -166,12 +190,22 @@ const Dashboard = ({ username }) => {
               required
             />
           </div>
+
         </div>
 
         {/* Submit Button */}
         <button type="submit">Submit</button>
+        <div>
+            <button type="button" onClick={fetchMonthlyExpense}>Show Monthly Expense</button>
+            {monthlyExpense !== null && (
+              <div>
+                <h3>Total Expense This Month: {monthlyExpense}</h3>
+              </div>
+            )}
+        </div>
       </form>
     </div>
+
   );
 };
 
