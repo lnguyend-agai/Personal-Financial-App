@@ -53,24 +53,28 @@ const Dashboard = ({ username }) => {
           type: "expense",
           category: "food",
           amount: parseFloat(expenses.food),
+          date : date,
         },
         {
           daily_record: dailyRecordId,
           type: "expense",
           category: "transport",
           amount: parseFloat(expenses.transport),
+          date : date,
         },
         {
           daily_record: dailyRecordId,
           type: "income",
           category: "salary",
           amount: parseFloat(income.salary),
+          date : date,
         },
         {
           daily_record: dailyRecordId,
           type: "income",
           category: "coffeeSales",
           amount: parseFloat(income.coffeeSales),
+          date : date,
         },
       ];
   
