@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 
 const Dashboard = ({ username }) => {
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mặc định là tháng hiện tại
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Mặc định là năm hiện tại
   const [date, setDate] = useState("");
   const [expenses, setExpenses] = useState({ food: "", transport: "" });
   const [income, setIncome] = useState({ salary: "", coffeeSales: "" });
@@ -107,13 +109,16 @@ const Dashboard = ({ username }) => {
     const token = localStorage.getItem("token");
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/transactions/monthly/", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Token ${token}` : "",
-        },
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/transactions/monthly/?month=${selectedMonth}&year=${selectedYear}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Token ${token}` : "",
+          },
+        }
+      );
   
       if (!response.ok) {
         throw new Error("Failed to fetch monthly expense");
@@ -199,6 +204,33 @@ const Dashboard = ({ username }) => {
 
         {/* Submit Button */}
         <button type="submit">Submit</button>
+
+        <div>
+          <label>Month:</label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("default", { month: "long" })}
+              </option>
+            ))}
+          </select>
+
+          <label>Year:</label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            {Array.from({ length: 10 }, (_, i) => (
+              <option key={i} value={new Date().getFullYear() - i}>
+                {new Date().getFullYear() - i}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div>
             <button type="button" onClick={fetchMonthlyExpense}>Show Monthly Expense</button>
             {monthlyExpense !== null && (
