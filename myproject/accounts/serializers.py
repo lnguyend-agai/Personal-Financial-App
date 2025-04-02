@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import DailyRecord, Transaction
 from django.contrib.auth import get_user_model
+from datetime import datetime
 
 User = get_user_model()
 
@@ -27,3 +28,14 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = '__all__'
+
+    def validate_date(self, value):
+        # Đảm bảo `date` là kiểu `date`
+        if not value:
+            raise serializers.ValidationError("Date is required.")
+        if isinstance(value, str):
+            try:
+                value = datetime.strptime(value, "%Y-%m-%d").date()
+            except ValueError:
+                raise serializers.ValidationError("Invalid date format. Use YYYY-MM-DD.")
+        return value

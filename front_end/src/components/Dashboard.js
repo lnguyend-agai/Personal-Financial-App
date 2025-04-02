@@ -8,6 +8,7 @@ const Dashboard = ({ username }) => {
   const [expenses, setExpenses] = useState({ food: "", transport: "" });
   const [income, setIncome] = useState({ salary: "", coffeeSales: "" });
   const [monthlyExpense, setMonthlyExpense] = useState(null);
+  const [dailyExpenses, setDailyExpenses] = useState([]);
   const handleExpensesChange = (e) => {
     const { name, value } = e.target;
     setExpenses((prev) => ({ ...prev, [name]: value }));
@@ -132,6 +133,34 @@ const Dashboard = ({ username }) => {
     }
   };
 
+  const fetchDailyExpenses = async () => {
+    const token = localStorage.getItem("token");
+    const month = selectedMonth; // Giá trị tháng được chọn
+    const year = selectedYear;   // Giá trị năm được chọn
+  
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/transactions/daily-expenses/?month=${month}&year=${year}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Token ${token}` : "",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch daily expenses");
+      }
+  
+      const data = await response.json();
+      setDailyExpenses(data.daily_expenses); // Lưu dữ liệu vào state
+    } catch (error) {
+      console.error("Error fetching daily expenses:", error);
+    }
+  };
+
   return (
     <div className="dashboard">
       <h1>Hello {username}</h1>
@@ -238,6 +267,33 @@ const Dashboard = ({ username }) => {
                 <h3>Total Expense This Month: {monthlyExpense}</h3>
               </div>
             )}
+        </div>
+
+        <div>
+          <button type="button" onClick={fetchDailyExpenses}>
+            Show Daily Expenses
+          </button>
+
+          {dailyExpenses.length > 0 && (
+            <table border="1">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Income</th>
+                  <th>Expense</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dailyExpenses.map((expense, index) => (
+                  <tr key={index}>
+                    <td>{expense.date}</td>
+                    <td>{expense.income}</td>
+                    <td>{expense.expense}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </form>
     </div>

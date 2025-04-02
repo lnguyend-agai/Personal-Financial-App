@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from datetime import datetime
 from rest_framework.decorators import action
+from collections import defaultdict
 
 User = get_user_model()
 
@@ -78,3 +79,43 @@ class TransactionViewSet(viewsets.ModelViewSet):
         ).aggregate(total=Sum('amount'))['total'] or 0
 
         return Response({"month": month, "year": year, "total_expense": total_expense})
+    
+    # def perform_create(self, serializer):
+    #     try:
+    #         # Lấy ngày từ request
+    #         date = self.request.data.get('date')
+    #         if not date:
+    #             raise ValueError("Date is required.")  # Nếu không có ngày, báo lỗi
+    #         if isinstance(date, str):  # Nếu `date` là chuỗi, chuyển thành kiểu `date`
+    #             date = datetime.strptime(date, "%Y-%m-%d").date()
+    #         serializer.save(daily_record__user=self.request.user, date=date)
+    #     except ValueError as e:
+    #         raise serializer.ValidationError({"date": str(e)})
+    #     except Exception as e:
+    #         raise serializer.ValidationError({"error": str(e)})
+
+    @action(detail=False, methods=['get'], url_path='daily-expenses')
+    def daily_expenses(self, request):
+        # Lấy tháng và năm từ query params
+        month = request.query_params.get('month', datetime.now().month)
+        year = request.query_params.get('year', datetime.now().year)
+
+        # Lọc giao dịch theo tháng và năm dựa trên trường `date`
+        transactions = self.get_queryset().filter(
+            date__month=month,
+            date__year=year
+        ).values('date', 'type').annotate(total=Sum('amount'))
+
+        # Tổ chức dữ liệu theo ngày
+        daily_data = defaultdict(lambda: {'income': 0, 'expense': 0})
+        for transaction in transactions:
+            date = transaction['date']
+            daily_data[date][transaction['type']] += transaction['total']
+
+        # Chuyển đổi dữ liệu thành danh sách
+        result = [
+            {'date': date, 'income': data['income'], 'expense': data['expense']}
+            for date, data in sorted(daily_data.items())
+        ]
+
+        return Response({"month": month, "year": year, "daily_expenses": result})
