@@ -80,20 +80,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         return Response({"month": month, "year": year, "total_expense": total_expense})
     
-    # def perform_create(self, serializer):
-    #     try:
-    #         # Lấy ngày từ request
-    #         date = self.request.data.get('date')
-    #         if not date:
-    #             raise ValueError("Date is required.")  # Nếu không có ngày, báo lỗi
-    #         if isinstance(date, str):  # Nếu `date` là chuỗi, chuyển thành kiểu `date`
-    #             date = datetime.strptime(date, "%Y-%m-%d").date()
-    #         serializer.save(daily_record__user=self.request.user, date=date)
-    #     except ValueError as e:
-    #         raise serializer.ValidationError({"date": str(e)})
-    #     except Exception as e:
-    #         raise serializer.ValidationError({"error": str(e)})
-
     @action(detail=False, methods=['get'], url_path='daily-expenses')
     def daily_expenses(self, request):
         # Lấy tháng và năm từ query params

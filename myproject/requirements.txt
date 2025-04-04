@@ -3,3 +3,4 @@ djangorestframework>=3.12,<4.0
 python-decouple
 django-cors-headers>=3.7,<4.0
 debugpy
+psycopg
