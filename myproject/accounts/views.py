@@ -74,8 +74,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         total_expense = self.get_queryset().filter(
             type="expense",
-            created_at__month=month,
-            created_at__year=year
+            date__month=month,
+            date__year=year
         ).aggregate(total=Sum('amount'))['total'] or 0
 
         return Response({"month": month, "year": year, "total_expense": total_expense})
