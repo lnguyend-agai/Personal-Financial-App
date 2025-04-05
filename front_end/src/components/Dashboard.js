@@ -126,7 +126,7 @@ const Dashboard = ({ username }) => {
       }
   
       const data = await response.json();
-      setMonthlyExpense(data.total_expense); // Lưu tổng chi tiêu vào state
+      setMonthlyExpense(data); // Lưu tổng chi tiêu vào state
     } catch (error) {
       console.error("Error fetching monthly expense:", error);
       console.log("Failed to fetch monthly expense. Please try again.");
@@ -261,10 +261,12 @@ const Dashboard = ({ username }) => {
         </div>
 
         <div>
-            <button type="button" onClick={fetchMonthlyExpense}>Show Monthly Expense</button>
+            <button type="button" onClick={fetchMonthlyExpense}>Show Monthly Transaction</button>
             {monthlyExpense !== null && (
               <div>
-                <h3>Total Expense This Month: {monthlyExpense}</h3>
+                <h3>Total Expense This Month: {monthlyExpense.total_expense}</h3>
+                <h3>Total Income This Month: {monthlyExpense.total_income}</h3>
+                <h3>Total Net Balance This Month: {monthlyExpense.net_balance}</h3>
               </div>
             )}
         </div>

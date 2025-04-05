@@ -72,13 +72,27 @@ class TransactionViewSet(viewsets.ModelViewSet):
         month = request.query_params.get('month', datetime.now().month)
         year = request.query_params.get('year', datetime.now().year)
 
-        total_expense = self.get_queryset().filter(
+        queryset = self.get_queryset()
+
+        total_expense = queryset.filter(
             type="expense",
             date__month=month,
             date__year=year
         ).aggregate(total=Sum('amount'))['total'] or 0
 
-        return Response({"month": month, "year": year, "total_expense": total_expense})
+        total_income = queryset.filter(
+            type="income",
+            date__month=month,
+            date__year=year
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        response_data = {"month": month, 
+                         "year": year, 
+                         "total_expense": total_expense,
+                         "total_income": total_income,
+                         "net_balance": total_income - total_expense}
+
+        return Response(response_data, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'], url_path='daily-expenses')
     def daily_expenses(self, request):
