@@ -4,11 +4,6 @@ import os
 import sys
 
 
-if os.environ.get("RUN_MAIN") == "true":  # Run main process only
-    import debugpy
-    debugpy.listen(("0.0.0.0", 5678))  # Listen port 5678
-    print("Waiting for debugger to attach...")
-
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
