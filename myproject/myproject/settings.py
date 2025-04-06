@@ -28,7 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db' # django-celery-results to store results
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24  # 24 hours
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'corsheaders',
     'rest_framework.authtoken',
+    'django_celery_results'
 ]
 
 REST_FRAMEWORK = {
