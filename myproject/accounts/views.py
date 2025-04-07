@@ -17,6 +17,7 @@ from django.db.models import Sum
 from datetime import datetime
 from rest_framework.decorators import action
 from collections import defaultdict
+from .tasks import send_monthly_report
 
 User = get_user_model()
 
@@ -119,3 +120,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
         ]
 
         return Response({"month": month, "year": year, "daily_expenses": result})
+    
+    @action(detail=False, methods=['post'], url_path='send-monthly-report')
+    def send_monthly_report_view(self, request):
+        user = request.user
+        hardcode_email = 'nguyendinhloc1267@gmail.com'
+        send_monthly_report.delay(hardcode_email, user.id)  # Call task Celery
+        return Response({"message": "Monthly report is being generated and will be sent to your email shortly."})
