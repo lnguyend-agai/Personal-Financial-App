@@ -160,6 +160,30 @@ const Dashboard = ({ username }) => {
       console.error("Error fetching daily expenses:", error);
     }
   };
+  const SendReportToEmail = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/transactions/send-monthly-report/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Token ${token}` : "",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to send report to email");
+      }
+      
+      alert("Report sent to email successfully!");
+    } catch (error) {
+      console.error("Error when sending e-mail:", error);
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -296,6 +320,12 @@ const Dashboard = ({ username }) => {
               </tbody>
             </table>
           )}
+        </div>
+
+        <div>
+          <button type="button" onClick={SendReportToEmail}>
+            Send Monthly Transaction Report to Email
+          </button>
         </div>
       </form>
     </div>
