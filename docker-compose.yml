@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./myproject  
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    volumes:
+      - ./myproject:/app
+
+  frontend:
+    build:
+      context: ./front_end  
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: ./myproject 
+      dockerfile: Dockerfile
+    command: celery -A myproject worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  celery-beat:
+    build:
+      context: ./myproject  
+      dockerfile: Dockerfile
+    command: celery -A myproject beat --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
