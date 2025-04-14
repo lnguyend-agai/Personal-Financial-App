@@ -1,5 +1,5 @@
 # Use Python base image
-FROM python:3.13.2-slim
+FROM python:3.12-slim
 
 # Create app folder in container
 WORKDIR /app
