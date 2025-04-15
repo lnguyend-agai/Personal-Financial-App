@@ -13,6 +13,9 @@ services:
       - ./myproject:/app  
     env_file:
       - ./myproject/.env
+    command: >
+      sh -c "python manage.py migrate &&
+            gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application"
 
   db:
     image: postgres:13
