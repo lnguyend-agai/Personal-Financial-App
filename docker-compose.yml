@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ./myproject  
+      context: ./myproject
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -10,13 +10,23 @@ services:
     depends_on:
       - redis
     volumes:
-      - ./myproject:/app
+      - ./myproject:/app  
     env_file:
       - ./myproject/.env
 
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    env_file:
+      - ./myproject/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   frontend:
     build:
-      context: ./front_end  
+      context: ./front_end
       dockerfile: Dockerfile
     ports:
       - "3000:80"
@@ -28,7 +38,7 @@ services:
 
   celery:
     build:
-      context: ./myproject 
+      context: ./myproject
       dockerfile: Dockerfile
     command: celery -A myproject worker --loglevel=info
     depends_on:
@@ -40,7 +50,7 @@ services:
 
   celery-beat:
     build:
-      context: ./myproject  
+      context: ./myproject
       dockerfile: Dockerfile
     command: celery -A myproject beat --loglevel=info
     depends_on:
@@ -49,3 +59,6 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
     env_file:
       - ./myproject/.env
+
+volumes:
+  postgres_data:
