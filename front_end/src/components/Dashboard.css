@@ -1,0 +1,91 @@
+
+.dashboard {
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+
+  .dashboard h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+
+  .dashboard label {
+    font-weight: bold;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+
+  .dashboard input[type="text"],
+  .dashboard input[type="number"],
+  .dashboard input[type="date"],
+  .dashboard select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+  
+
+  .dashboard input:focus,
+  .dashboard select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+
+  .dashboard button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .dashboard button:hover {
+    background-color: #0056b3;
+  }
+  
+
+  .dashboard table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .dashboard table th,
+  .dashboard table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .dashboard table th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .dashboard table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .dashboard table tr:hover {
+    background-color: #ddd;
+  }
