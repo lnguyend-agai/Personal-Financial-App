@@ -9,3 +9,4 @@ django-anymail
 gunicorn
 psycopg2-binary
 Faker>=20.1.0
+tqdm>=4.66.1 

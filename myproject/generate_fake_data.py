@@ -4,6 +4,7 @@ import random
 from datetime import datetime, timedelta
 from faker import Faker
 from django.contrib.auth.hashers import make_password
+from tqdm import tqdm
 
 # Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
@@ -13,14 +14,14 @@ from accounts.models import CustomUser, DailyRecord, Transaction
 
 fake = Faker()
 
-def create_fake_users(num_users=10):
+def create_fake_users(num_users=1000):
     """Create fake users with default password"""
     users = []
-    for i in range(num_users):
+    for i in tqdm(range(num_users), desc="Creating users"):
         username = f"customer{i+1}"
         email = fake.email()
         password = make_password('password123')  # Default password: password123
-        user = CustomUser.objects.create(
+        user = CustomUser(
             username=username,
             email=email,
             password=password,
@@ -28,71 +29,81 @@ def create_fake_users(num_users=10):
             last_name=fake.last_name()
         )
         users.append(user)
-    return users
+    
+    # Bulk create users
+    CustomUser.objects.bulk_create(users)
+    return CustomUser.objects.filter(username__startswith='customer')
 
-def create_fake_daily_records(users, days_back=30):
+def create_fake_daily_records(users, days_back=365):
     """Create daily records for each user"""
     daily_records = []
-    for user in users:
+    for user in tqdm(users, desc="Creating daily records"):
         for i in range(days_back):
             date = datetime.now().date() - timedelta(days=i)
             # Generate reasonable random income and expense
             total_income = round(random.uniform(40, 100), 2)  # Income range: 40-100
             total_expense = round(random.uniform(30, 80), 2)  # Expense range: 30-80
             
-            daily_record = DailyRecord.objects.create(
+            daily_record = DailyRecord(
                 user=user,
                 date=date,
                 total_income=total_income,
                 total_expense=total_expense
             )
             daily_records.append(daily_record)
-    return daily_records
+    
+    # Bulk create daily records
+    DailyRecord.objects.bulk_create(daily_records)
+    return DailyRecord.objects.filter(user__in=users)
 
 def create_fake_transactions(daily_records):
     """Create transactions for each daily record"""
-    for daily_record in daily_records:
+    transactions = []
+    for daily_record in tqdm(daily_records, desc="Creating transactions"):
         # Create income transactions
         # 1. Salary (range: 30-60)
         salary_amount = round(random.uniform(30, 60), 2)
-        Transaction.objects.create(
+        transactions.append(Transaction(
             daily_record=daily_record,
             type='income',
             category='salary',
             amount=salary_amount,
             date=daily_record.date
-        )
+        ))
         
         # 2. Coffee Sales (range: 10-40)
         coffee_amount = round(random.uniform(10, 40), 2)
-        Transaction.objects.create(
+        transactions.append(Transaction(
             daily_record=daily_record,
             type='income',
             category='coffeeSales',
             amount=coffee_amount,
             date=daily_record.date
-        )
+        ))
         
         # Create expense transactions
         # 1. Transport (range: 15-30)
         transport_amount = round(random.uniform(15, 30), 2)
-        Transaction.objects.create(
+        transactions.append(Transaction(
             daily_record=daily_record,
             type='expense',
             category='transport',
             amount=transport_amount,
             date=daily_record.date
-        )
+        ))
         
         # 2. Food (range: 15-50)
         food_amount = round(random.uniform(15, 50), 2)
-        Transaction.objects.create(
+        transactions.append(Transaction(
             daily_record=daily_record,
             type='expense',
             category='food',
             amount=food_amount,
             date=daily_record.date
-        )
+        ))
+    
+    # Bulk create transactions
+    Transaction.objects.bulk_create(transactions)
 
 def main():
     print("Starting to generate fake data...")
@@ -107,8 +118,8 @@ def main():
         print("Existing data deleted!")
     
     # Get user input for number of users and days
-    num_users = int(input("Enter number of users to create (default 10): ") or "10")
-    days_back = int(input("Enter number of days of history to create (default 30): ") or "30")
+    num_users = int(input("Enter number of users to create (default 1000): ") or "1000")
+    days_back = int(input("Enter number of days of history to create (default 365): ") or "365")
     
     # Create users
     print(f"\nCreating {num_users} users...")
