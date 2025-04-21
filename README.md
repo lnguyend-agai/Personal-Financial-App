@@ -107,11 +107,11 @@ docker-compose up -d
 ## Send Monthly Report to User
 ![image](https://github.com/user-attachments/assets/a88498e4-e6eb-46ff-87fb-d0213684c9f3)
 
+# Fake database
 
+Use the Faker library to create a big database. This for learn in-memory and load balancing
 
-
-
-
+![image](https://github.com/user-attachments/assets/d4796b92-b8a4-4170-8b7b-42202a752015)
 
 
 
