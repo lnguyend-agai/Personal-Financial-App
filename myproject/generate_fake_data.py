@@ -14,30 +14,38 @@ from accounts.models import CustomUser, DailyRecord, Transaction
 
 fake = Faker()
 
-def create_fake_users(num_users=1000):
+def create_fake_users(num_users=10000):
     """Create fake users with default password"""
     users = []
-    for i in tqdm(range(num_users), desc="Creating users"):
-        username = f"customer{i+1}"
-        email = fake.email()
-        password = make_password('password123')  # Default password: password123
-        user = CustomUser(
-            username=username,
-            email=email,
-            password=password,
-            first_name=fake.first_name(),
-            last_name=fake.last_name()
-        )
-        users.append(user)
+    batch_size = 1000  # Process users in batches of 1000
     
-    # Bulk create users
-    CustomUser.objects.bulk_create(users)
+    for i in tqdm(range(0, num_users, batch_size), desc="Creating users"):
+        batch_users = []
+        for j in range(i, min(i + batch_size, num_users)):
+            username = f"customer{j+1}"
+            email = fake.email()
+            password = make_password('password123')  # Default password: password123
+            user = CustomUser(
+                username=username,
+                email=email,
+                password=password,
+                first_name=fake.first_name(),
+                last_name=fake.last_name()
+            )
+            batch_users.append(user)
+        
+        # Bulk create users in batches
+        CustomUser.objects.bulk_create(batch_users)
+    
     return CustomUser.objects.filter(username__startswith='customer')
 
 def create_fake_daily_records(users, days_back=365):
     """Create daily records for each user"""
     daily_records = []
+    batch_size = 100  # Process daily records in batches of 100
+    
     for user in tqdm(users, desc="Creating daily records"):
+        user_records = []
         for i in range(days_back):
             date = datetime.now().date() - timedelta(days=i)
             # Generate reasonable random income and expense
@@ -50,15 +58,26 @@ def create_fake_daily_records(users, days_back=365):
                 total_income=total_income,
                 total_expense=total_expense
             )
-            daily_records.append(daily_record)
+            user_records.append(daily_record)
+            
+            # Bulk create when batch size is reached
+            if len(user_records) >= batch_size:
+                DailyRecord.objects.bulk_create(user_records)
+                daily_records.extend(user_records)
+                user_records = []
+        
+        # Create remaining records
+        if user_records:
+            DailyRecord.objects.bulk_create(user_records)
+            daily_records.extend(user_records)
     
-    # Bulk create daily records
-    DailyRecord.objects.bulk_create(daily_records)
     return DailyRecord.objects.filter(user__in=users)
 
 def create_fake_transactions(daily_records):
     """Create transactions for each daily record"""
     transactions = []
+    batch_size = 1000  # Process transactions in batches of 1000
+    
     for daily_record in tqdm(daily_records, desc="Creating transactions"):
         # Create income transactions
         # 1. Salary (range: 30-60)
@@ -101,9 +120,15 @@ def create_fake_transactions(daily_records):
             amount=food_amount,
             date=daily_record.date
         ))
+        
+        # Bulk create when batch size is reached
+        if len(transactions) >= batch_size:
+            Transaction.objects.bulk_create(transactions)
+            transactions = []
     
-    # Bulk create transactions
-    Transaction.objects.bulk_create(transactions)
+    # Create remaining transactions
+    if transactions:
+        Transaction.objects.bulk_create(transactions)
 
 def main():
     print("Starting to generate fake data...")
@@ -118,7 +143,7 @@ def main():
         print("Existing data deleted!")
     
     # Get user input for number of users and days
-    num_users = int(input("Enter number of users to create (default 1000): ") or "1000")
+    num_users = int(input("Enter number of users to create (default 10000): ") or "10000")
     days_back = int(input("Enter number of days of history to create (default 365): ") or "365")
     
     # Create users
