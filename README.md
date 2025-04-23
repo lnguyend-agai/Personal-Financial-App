@@ -113,6 +113,11 @@ Use the Faker library to create a big database. This for learn in-memory and loa
 
 ![image](https://github.com/user-attachments/assets/d4796b92-b8a4-4170-8b7b-42202a752015)
 
+Number related to the database
+
+![image](https://github.com/user-attachments/assets/8f5aac65-c3ae-4948-b2b6-27ec4f1a550b)
+
+
 
 
 
