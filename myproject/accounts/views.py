@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from .models import DailyRecord, Transaction
 from .serializers import UserSerializer, DailyRecordSerializer, TransactionSerializer
 from django.contrib.auth import get_user_model
@@ -18,6 +18,7 @@ from datetime import datetime
 from rest_framework.decorators import action
 from collections import defaultdict
 from .tasks import send_monthly_report
+from core.services.transaction_cache import TransactionCacheService
 
 User = get_user_model()
 
@@ -127,3 +128,34 @@ class TransactionViewSet(viewsets.ModelViewSet):
         hardcode_email = 'nguyendinhloc1267@gmail.com'
         send_monthly_report.delay(hardcode_email, user.id)  # Call task Celery
         return Response({"message": "Monthly report is being generated and will be sent to your email shortly."})
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Get dashboard information for user, including total income/expense
+        Using cache to optimize performance
+        """
+        user_id = request.user.id
+        user_totals = TransactionCacheService.get_user_totals(user_id)
+        
+        return Response({
+            'status': 'success',
+            'data': user_totals
+        })
+
+class SystemStatsView(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request):
+        """
+        Get system-wide statistics (admin only)
+        Using cache to optimize performance
+        """
+        system_totals = TransactionCacheService.get_system_totals()
+        
+        return Response({
+            'status': 'success',
+            'data': system_totals
+        })
