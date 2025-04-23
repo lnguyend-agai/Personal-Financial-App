@@ -117,7 +117,9 @@ Number related to the database
 
 ![image](https://github.com/user-attachments/assets/8f5aac65-c3ae-4948-b2b6-27ec4f1a550b)
 
+# Cache Redis Strategy
 
+![image](https://github.com/user-attachments/assets/dcfbc5af-8bf3-4724-b530-731ef59bce19)
 
 
 
