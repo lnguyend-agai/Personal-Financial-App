@@ -33,6 +33,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:80"
+    volumes:
+      - ./front_end:/app
 
   redis:
     image: redis:6.2
