@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import RegisterView, LoginView, UserViewSet, DailyRecordViewSet, TransactionViewSet, UserRegistrationView, UserLoginView, DailyRecordListCreateView, DailyRecordRetrieveUpdateDestroyView, TransactionListCreateView, TransactionRetrieveUpdateDestroyView, DashboardView, SystemStatsView
+from .views import RegisterView, LoginView, UserViewSet, DailyRecordViewSet, TransactionViewSet, DashboardView, SystemStatsView
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
