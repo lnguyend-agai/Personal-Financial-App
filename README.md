@@ -121,6 +121,11 @@ Number related to the database
 
 ![image](https://github.com/user-attachments/assets/dcfbc5af-8bf3-4724-b530-731ef59bce19)
 
+# Query Example Results
+
+![image](https://github.com/user-attachments/assets/a3f79430-a6a5-4309-b2a0-e64106486a0f)
+
+
 
 
 
