@@ -29,6 +29,12 @@ class DailyRecord(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.date}"
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'date']),  # Composite index for user's daily records
+            models.Index(fields=['date']),  # Index for date-based queries
+        ]
+
 # Transaction Model
 class Transaction(models.Model):
     TRANSACTION_TYPES = [
@@ -45,3 +51,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.type.capitalize()} - {self.category} - {self.amount}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['daily_record', 'type']),  # Composite index for daily record transactions
+            models.Index(fields=['type', 'category']),  # Index for type and category queries
+            models.Index(fields=['date']),  # Index for date-based queries
+        ]
