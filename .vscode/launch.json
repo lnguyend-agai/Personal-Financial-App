@@ -12,6 +12,24 @@
             "django": true,
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Python: Docker",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/myproject/scripts/run_queries.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "docker": {
+                "image": "personal-financial-app-backend",
+                "container": "personal-financial-app-backend-1"
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "/app"
+                }
+            ]
         }
     ]
 }
