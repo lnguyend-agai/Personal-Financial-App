@@ -1,7 +1,7 @@
 import os
 import sys
 import django
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import logging
 
 # Add the project directory to Python path
@@ -24,31 +24,33 @@ def analyze_query_performance(query, description):
     """
     logger.info(f"\n=== Analyzing Query: {description} ===")
     
-    # Get query plan
-    plan = explain_query(query)
-    logger.info("Query Plan:")
-    for line in plan:
-        logger.info(line[0])
-    
-    # Execute query and measure time
-    start_time = datetime.now()
-    result = list(query)
-    end_time = datetime.now()
-    
-    logger.info(f"Query returned {len(result)} results")
-    logger.info(f"Execution time: {(end_time - start_time).total_seconds():.4f} seconds")
-    
-    return result
+    try:
+        # Get query plan
+        plan = explain_query(query)
+        logger.info("Query Plan:")
+        for line in plan:
+            logger.info(line[0])
+        
+        # Execute query and measure time
+        start_time = datetime.now()
+        result = list(query)
+        end_time = datetime.now()
+        
+        logger.info(f"Query returned {len(result)} results")
+        logger.info(f"Execution time: {(end_time - start_time).total_seconds():.4f} seconds")
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error executing query: {str(e)}")
+        return None
 
 def main():
-    # Get a test user
-    user = CustomUser.objects.first()
-    if not user:
-        logger.error("No users found in database. Please create some test data first.")
-        return
+    # Get a test user with data
+    user = CustomUser.objects.get(id=2468)  # Using user with known data
+    logger.info(f"Using user: {user.username} (ID: {user.id})")
 
     # Set date range for analysis
-    end_date = datetime.now()
+    end_date = date.today()
     start_date = end_date - timedelta(days=30)
 
     # 1. Analyze DailyRecord queries

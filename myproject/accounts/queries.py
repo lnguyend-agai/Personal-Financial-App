@@ -1,25 +1,26 @@
 from django.db.models import Sum, Count, Avg, F, Q
 from django.db import connection
 from .models import DailyRecord, Transaction, CustomUser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import logging
 
 logger = logging.getLogger(__name__)
 
 class DailyRecordQueries:
     @staticmethod
-    def get_user_daily_records(user_id: int, start_date: datetime, end_date: datetime):
+    def get_user_daily_records(user_id: int, start_date: date, end_date: date):
         """
         Get daily records for a specific user within a date range
         Using index: (user, date)
         """
         return DailyRecord.objects.filter(
             user_id=user_id,
-            date__range=(start_date, end_date)
+            date__gte=start_date,
+            date__lte=end_date
         ).select_related('user')
 
     @staticmethod
-    def get_daily_records_by_date(date: datetime):
+    def get_daily_records_by_date(date: date):
         """
         Get all daily records for a specific date
         Using index: (date)
@@ -61,21 +62,22 @@ class TransactionQueries:
         """
         return Transaction.objects.filter(
             type=transaction_type,
-            category=category
+            category__iexact=category
         ).select_related('daily_record', 'daily_record__user')
 
     @staticmethod
-    def get_transactions_by_date_range(start_date: datetime, end_date: datetime):
+    def get_transactions_by_date_range(start_date: date, end_date: date):
         """
         Get transactions within a date range
         Using index: (date)
         """
         return Transaction.objects.filter(
-            date__range=(start_date, end_date)
+            date__gte=start_date,
+            date__lte=end_date
         ).select_related('daily_record', 'daily_record__user')
 
     @staticmethod
-    def get_user_transactions_summary(user_id: int, start_date: datetime, end_date: datetime):
+    def get_user_transactions_summary(user_id: int, start_date: date, end_date: date):
         """
         Get detailed transaction summary for a user
         Using multiple indexes
@@ -83,7 +85,8 @@ class TransactionQueries:
         # Get daily records first (using user, date index)
         daily_records = DailyRecord.objects.filter(
             user_id=user_id,
-            date__range=(start_date, end_date)
+            date__gte=start_date,
+            date__lte=end_date
         ).values_list('id', flat=True)
 
         # Then get transactions (using daily_record, type index)
@@ -99,7 +102,8 @@ def explain_query(query):
     Helper function to explain the query execution plan
     """
     with connection.cursor() as cursor:
-        cursor.execute(f"EXPLAIN ANALYZE {query.query}")
+        sql, params = query.query.sql_with_params()
+        cursor.execute("EXPLAIN ANALYZE " + sql, params)
         return cursor.fetchall()
 
 # Example usage:
@@ -108,8 +112,8 @@ if __name__ == "__main__":
     last_month = datetime.now() - timedelta(days=30)
     user_records = DailyRecordQueries.get_user_daily_records(
         user_id=1,
-        start_date=last_month,
-        end_date=datetime.now()
+        start_date=last_month.date(),
+        end_date=datetime.now().date()
     )
     logger.info(f"Found {user_records.count()} daily records")
 
@@ -131,7 +135,7 @@ if __name__ == "__main__":
     # Example 4: Get detailed transaction summary
     transaction_summary = TransactionQueries.get_user_transactions_summary(
         user_id=1,
-        start_date=last_month,
-        end_date=datetime.now()
+        start_date=last_month.date(),
+        end_date=datetime.now().date()
     )
     logger.info(f"Transaction summary: {list(transaction_summary)}") 
