@@ -5,17 +5,24 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+      - "5678:5678"  # Port cho debugpy
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - DEBUG=${DEBUG:-false}  # Thêm biến môi trường DEBUG
     depends_on:
       - redis
+      - db
     volumes:
-      - ./myproject:/app  
+      - ./myproject:/app
     env_file:
       - ./myproject/.env
     command: >
       sh -c "python manage.py migrate &&
-            gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application"
+             if [ \"$${DEBUG}\" = \"true\" ]; then
+               python -m debugpy --listen 0.0.0.0:5678 --wait-for-client manage.py runserver 0.0.0.0:8000;
+             else
+               gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application;
+             fi"
 
   db:
     image: postgres:13

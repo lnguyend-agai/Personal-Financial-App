@@ -2,34 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Django",
+            "name": "Python: Remote Attach",
             "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/myproject/manage.py",
-            "args": [
-                "runserver",
-            ],
-            "django": true,
-            "console": "integratedTerminal",
-            "justMyCode": false
-        },
-        {
-            "name": "Python: Docker",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/myproject/scripts/run_queries.py",
-            "console": "integratedTerminal",
-            "justMyCode": false,
-            "docker": {
-                "image": "personal-financial-app-backend",
-                "container": "personal-financial-app-backend-1"
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
             },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}",
+                    "localRoot": "${workspaceFolder}/myproject",
                     "remoteRoot": "/app"
                 }
-            ]
+            ],
+            "justMyCode": true
         }
     ]
 }
