@@ -135,7 +135,15 @@ Second time query, with Redis Cache:
 
 ![image](https://github.com/user-attachments/assets/1843f8e1-30d3-4517-bc8a-9a991d9a193b)
 
+# Security
 
+## User Password
+
+Use integrated system in Django. Password -> Hash -> Save to database.
+
+## Token
+
+**TokenAuthentication** from Django REST Framework (DRF) to authenticated user. User use that token to acess API.
 
 
 
