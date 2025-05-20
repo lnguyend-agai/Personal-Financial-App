@@ -27,6 +27,9 @@ class TransactionCacheService:
         # Check cache for both income and expense
         cached_income = RedisCacheService.get_cache(cls.SYSTEM_TOTAL_INCOME_KEY)
         cached_expense = RedisCacheService.get_cache(cls.SYSTEM_TOTAL_EXPENSE_KEY)
+        
+        # cached_income = None
+        # cached_expense = None
 
         # If we have all cached data
         if cached_income is not None and cached_expense is not None:
