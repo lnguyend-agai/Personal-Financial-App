@@ -125,6 +125,27 @@ Number related to the database
 
 ![image](https://github.com/user-attachments/assets/a3f79430-a6a5-4309-b2a0-e64106486a0f)
 
+# Big Query
+
+First time query:
+
+![image](https://github.com/user-attachments/assets/b84be2c9-740c-45ef-a55e-56362b4fdda7)
+
+Second time query, with Redis Cache:
+
+![image](https://github.com/user-attachments/assets/1843f8e1-30d3-4517-bc8a-9a991d9a193b)
+
+# Security
+
+## User Password
+
+Use integrated system in Django. Password -> Hash -> Save to database.
+
+## Token
+
+**TokenAuthentication** from Django REST Framework (DRF) to authenticated user. User use that token to acess API.
+
+
 
 
 
